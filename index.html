@@ -1,0 +1,70 @@
+```html
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<title>Quản lý nông sản</title>
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<h1>🌱 Hệ thống quản lý nông sản</h1>
+
+<div class="box">
+
+<h2>Thêm Vườn Nông Sản</h2>
+
+<input id="tenVuon" placeholder="Tên vườn">
+<input id="diaChi" placeholder="Địa chỉ">
+
+<button onclick="themVuon()">Thêm vườn</button>
+
+</div>
+
+
+<div class="box">
+
+<h2>Thêm Nông Sản</h2>
+
+<input id="tenNongSan" placeholder="Tên nông sản">
+<input id="loaiNongSan" placeholder="Loại nông sản">
+
+<button onclick="themNongSan()">Thêm nông sản</button>
+
+</div>
+
+
+<div class="box">
+
+<h2>Thêm Lô Nông Sản</h2>
+
+<select id="vuonSelect"></select>
+
+<select id="nongSanSelect"></select>
+
+<input id="soLuong" placeholder="Số lượng">
+
+<button onclick="themLo()">Thêm lô</button>
+
+</div>
+
+
+<div class="box">
+
+<h2>Danh sách lô nông sản</h2>
+
+<ul id="dsLo"></ul>
+
+</div>
+
+
+</body>
+
+<script src="script.js"></script>
+
+</html>
+```

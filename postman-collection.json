@@ -1,0 +1,492 @@
+{
+  "info": {
+    "name": "AgriCounterfeit API",
+    "_postman_id": "agri-counterfeit-2026",
+    "description": "API hệ thống Quản lý Nông Sản Sạch & Chống Hàng Giả\n\n## Hướng dẫn sử dụng\n1. Import file này vào Postman\n2. Chạy request **Login** để lấy token\n3. Token tự động được lưu vào biến `{{token}}`\n4. Các request Private sẽ tự dùng token đó\n\n## Base URL\n`http://localhost:3001`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔓 PUBLIC – Không cần đăng nhập",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/health",
+            "description": "Kiểm tra server có đang chạy không"
+          }
+        },
+        {
+          "name": "Danh sách sản phẩm",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products",
+            "description": "Lấy toàn bộ danh sách sản phẩm nông sản (public)"
+          }
+        },
+        {
+          "name": "Chi tiết sản phẩm",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products/1",
+            "description": "Xem chi tiết một sản phẩm theo product_id"
+          }
+        },
+        {
+          "name": "Tra cứu lô hàng (batch_no)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/batches/lookup?batch_no=BATCH-RB-2026-001",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "batches", "lookup"],
+              "query": [
+                {
+                  "key": "batch_no",
+                  "value": "BATCH-RB-2026-001",
+                  "description": "Mã lô hàng cần tra cứu"
+                }
+              ]
+            },
+            "description": "Tra cứu nguồn gốc lô hàng theo mã lô – KHÔNG cần đăng nhập.\n\nThử các mã lô:\n- BATCH-RB-2026-001\n- BATCH-CT-2026-001\n- BATCH-DT-2026-001"
+          }
+        },
+        {
+          "name": "Tra cứu lô hàng – không tìm thấy",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/batches/lookup?batch_no=HANG-GIA-001",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "batches", "lookup"],
+              "query": [
+                {
+                  "key": "batch_no",
+                  "value": "HANG-GIA-001"
+                }
+              ]
+            },
+            "description": "Thử tra cứu mã lô không tồn tại → trả về 404 (hàng giả)"
+          }
+        },
+        {
+          "name": "Danh sách danh mục",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/categories",
+            "description": "Lấy danh sách danh mục sản phẩm"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 AUTH – Đăng nhập & Đăng ký",
+      "item": [
+        {
+          "name": "Đăng nhập – Manager",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.collectionVariables.set('token', res.token);",
+                  "    console.log('Token đã được lưu tự động:', res.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/login",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"manager1\",\n  \"password\": \"123456\"\n}"
+            },
+            "description": "Đăng nhập với tài khoản Manager. Token sẽ tự động lưu vào biến {{token}}."
+          }
+        },
+        {
+          "name": "Đăng nhập – Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.collectionVariables.set('token', res.token);",
+                  "    console.log('Token đã được lưu:', res.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/login",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"customer1\",\n  \"password\": \"000000\"\n}"
+            },
+            "description": "Đăng nhập với tài khoản Customer"
+          }
+        },
+        {
+          "name": "Đăng nhập – Staff",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.collectionVariables.set('token', res.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/login",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"staff1\",\n  \"password\": \"123456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Đăng nhập sai mật khẩu",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/login",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"manager1\",\n  \"password\": \"sai_mat_khau\"\n}"
+            },
+            "description": "Thử đăng nhập sai → trả về 401"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔒 PRIVATE – Manager",
+      "description": "Các API chỉ dành cho Manager. Cần đăng nhập bằng tài khoản manager1 trước.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "VƯỜN TRỒNG",
+          "item": [
+            {
+              "name": "Danh sách vườn",
+              "request": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/gardens",
+                "description": "Lấy danh sách tất cả vườn trồng của manager đang đăng nhập"
+              }
+            },
+            {
+              "name": "Tạo vườn mới",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/gardens",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Vườn Rau Hữu Cơ Bến Tre\",\n  \"area\": 2500,\n  \"street\": \"Xã Tam Phước, Châu Thành\",\n  \"city\": \"Bến Tre\",\n  \"soil_type\": \"Đất phù sa\"\n}"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "CHỨNG NHẬN",
+          "item": [
+            {
+              "name": "Danh sách chứng nhận",
+              "request": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/certifications",
+                "description": "Lấy tất cả chứng nhận của các vườn"
+              }
+            },
+            {
+              "name": "Chứng nhận của vườn 1",
+              "request": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/certifications/garden/1"
+              }
+            },
+            {
+              "name": "Thêm chứng nhận",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/certifications",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"garden_id\": 1,\n  \"name\": \"GlobalGAP\",\n  \"issue_date\": \"2026-01-01\",\n  \"expiry_date\": \"2028-01-01\",\n  \"issuing_authority\": \"Control Union Certifications\"\n}"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "SẢN PHẨM",
+          "item": [
+            {
+              "name": "Tất cả sản phẩm",
+              "request": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/products"
+              }
+            },
+            {
+              "name": "Thêm sản phẩm",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/products",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"garden_id\": 1,\n  \"product_name\": \"Bắp cải hữu cơ\",\n  \"type\": \"Rau củ\",\n  \"quality\": \"Hữu cơ\",\n  \"species\": \"Brassica oleracea\",\n  \"unit_price\": 25000,\n  \"description\": \"Bắp cải hữu cơ tươi, không thuốc trừ sâu\"\n}"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "LÔ HÀNG",
+          "item": [
+            {
+              "name": "Tất cả lô hàng",
+              "request": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/batches"
+              }
+            },
+            {
+              "name": "Tạo lô hàng mới",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/batches",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"product_id\": 1,\n  \"batch_no\": \"BATCH-RB-2026-003\",\n  \"harvest_date\": \"2026-04-10\",\n  \"expiry_date\": \"2026-04-16\",\n  \"initial_quantity\": 250,\n  \"current_quantity\": 250,\n  \"status\": \"available\"\n}"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "NHÂN VIÊN",
+          "item": [
+            {
+              "name": "Danh sách nhân viên",
+              "request": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/staff"
+              }
+            },
+            {
+              "name": "Thêm nhân viên",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/staff",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"garden_id\": 1,\n  \"full_name\": \"Nguyễn Thị Hoa\",\n  \"phone\": \"0967123456\",\n  \"position\": \"Nhân viên đóng gói\"\n}"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "ĐƠN HÀNG",
+          "item": [
+            {
+              "name": "Tất cả đơn hàng",
+              "request": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/transactions",
+                "description": "Xem toàn bộ đơn hàng (Manager)"
+              }
+            },
+            {
+              "name": "Cập nhật trạng thái đơn hàng",
+              "request": {
+                "method": "PATCH",
+                "url": "{{baseUrl}}/api/transactions/1/status",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"confirmed\"\n}"
+                },
+                "description": "Các trạng thái: pending → confirmed → shipping → delivered / cancelled"
+              }
+            }
+          ]
+        },
+        {
+          "name": "BÁO CÁO HÀNG GIẢ",
+          "item": [
+            {
+              "name": "Tất cả báo cáo",
+              "request": {
+                "method": "GET",
+                "url": "{{baseUrl}}/api/reports",
+                "description": "Manager xem toàn bộ báo cáo hàng giả"
+              }
+            },
+            {
+              "name": "Xác nhận báo cáo (có hàng giả)",
+              "request": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/api/reports/1/approve",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"conclusion\": \"Đã xác nhận có hàng giả tại địa điểm báo cáo. Phối hợp với quản lý thị trường xử lý.\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Từ chối báo cáo",
+              "request": {
+                "method": "PUT",
+                "url": "{{baseUrl}}/api/reports/1/reject",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"conclusion\": \"Sau khi điều tra, không có cơ sở xác nhận hàng giả tại địa điểm này.\"\n}"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔒 PRIVATE – Customer",
+      "description": "Các API dành cho Customer. Cần đăng nhập bằng tài khoản customer1 trước.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Đặt hàng",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/transactions",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"street\": \"123 Nguyễn Huệ, P.Bến Nghé, Q.1\",\n  \"city\": \"TP.HCM\",\n  \"notes\": \"Giao buổi sáng\",\n  \"items\": [\n    {\n      \"batch_id\": 1,\n      \"quantity\": 2,\n      \"unit_price\": 45000\n    },\n    {\n      \"batch_id\": 3,\n      \"quantity\": 1,\n      \"unit_price\": 65000\n    }\n  ]\n}"
+            },
+            "description": "Khách hàng đặt hàng. Gồm địa chỉ giao hàng và danh sách lô hàng muốn mua."
+          }
+        },
+        {
+          "name": "Đơn hàng của tôi",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/transactions/my",
+            "description": "Xem lịch sử đơn hàng của khách hàng đang đăng nhập"
+          }
+        },
+        {
+          "name": "Gửi báo cáo hàng giả",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/reports",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": 2,\n  \"location\": \"Chợ Bình Thạnh, TP.HCM\",\n  \"detected_date\": \"2026-04-07\",\n  \"fake_method\": \"Nhãn mác giả VietGAP, giá rẻ bất thường so với thị trường\",\n  \"evidence_url\": \"https://example.com/evidence.jpg\"\n}"
+            },
+            "description": "Khách hàng gửi báo cáo khi phát hiện hàng giả"
+          }
+        },
+        {
+          "name": "Báo cáo của tôi",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reports/my",
+            "description": "Xem lịch sử báo cáo hàng giả của khách hàng đang đăng nhập"
+          }
+        },
+        {
+          "name": "Xem hồ sơ cá nhân",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/auth/profile",
+            "description": "Xem thông tin tài khoản đang đăng nhập"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔒 PRIVATE – Staff",
+      "description": "Các API dành cho Staff. Cần đăng nhập bằng tài khoản staff1 trước.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Vườn của tôi",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/staff/my-garden",
+            "description": "Nhân viên xem thông tin vườn mình đang làm việc"
+          }
+        },
+        {
+          "name": "Lô hàng trong vườn",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/batches",
+            "description": "Xem danh sách lô hàng"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+# 🌿 AgriCounterfeit – Hệ thống Quản lý Nông Sản Sạch & Chống Hàng Giả
+
+Hệ thống web quản lý vườn nông sản, truy xuất nguồn gốc lô hàng và xử lý báo cáo hàng giả mạo.
+
+---
+
+## 🛠 Công nghệ sử dụng
+
+| Tầng | Công nghệ |
+|---|---|
+| Frontend | React 18 + TypeScript + Vite + Tailwind CSS |
+| Backend | Node.js + Express + TypeScript |
+| Database | Microsoft SQL Server (Prisma ORM) |
+| Auth | Token-based (Bearer Token) |
+
+---
+
+## 👥 Phân quyền người dùng
+
+| Vai trò | Mô tả |
+|---|---|
+| **Manager** | Quản lý vườn, sản phẩm, lô hàng, đơn hàng, xử lý báo cáo hàng giả |
+| **Staff** | Xem thông tin vườn, quản lý lô hàng |
+| **Customer** | Mua hàng, tra cứu lô hàng, gửi báo cáo hàng giả |
+
+---
+
+## 🚀 Cài đặt và chạy
+
+### Yêu cầu
+- Node.js >= 18
+- SQL Server 2019+
+- npm
+
+### 1. Clone project
+```bash
+git clone https://github.com/YOUR_USERNAME/webnongsan.git
+cd webnongsan
+```
+
+### 2. Khởi tạo Database
+Mở SQL Server Management Studio, chạy file `database.sql`
+
+### 3. Cài đặt Backend
+```bash
+cd backend
+npm install
+```
+
+Tạo file `.env` trong thư mục `backend/`:
+```env
+DATABASE_URL="sqlserver://localhost:1433;database=AgriSystem;user=sa;password=YOUR_PASSWORD;encrypt=false;trustServerCertificate=true"
+PORT=3001
+```
+
+```bash
+npx prisma generate
+npm run dev
+```
+
+### 4. Cài đặt Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Truy cập: http://localhost:5173
+
+---
+
+## 📋 Tài khoản demo
+
+| Vai trò | Username | Password |
+|---|---|---|
+| Manager | manager1 | 123456 |
+| Customer | customer1 | 000000 |
+| Staff | staff1 | 123456 |
+
+---
+
+## 🔍 API Endpoints
+
+### Public (không cần đăng nhập)
+- `GET /api/products` – Danh sách sản phẩm
+- `GET /api/batches/lookup?batch_no=xxx` – Tra cứu lô hàng
+- `GET /api/health` – Kiểm tra server
+
+### Private (cần Bearer Token)
+- `POST /api/auth/login` – Đăng nhập
+- `GET /api/transactions` – Quản lý đơn hàng (Manager)
+- `GET /api/reports` – Báo cáo hàng giả (Manager)
+- `POST /api/reports` – Gửi báo cáo (Customer)
+
+---
+
+## 📁 Cấu trúc thư mục
+
+```
+webnongsan/
+├── backend/
+│   ├── prisma/          # Schema database
+│   └── src/
+│       ├── controllers/
+│       ├── services/
+│       ├── routes/
+│       └── middleware/
+├── frontend/
+│   └── src/
+│       ├── pages/
+│       ├── components/
+│       └── services/
+├── database.sql         # Script tạo database
+└── er-diagram.html      # Sơ đồ ER
+```
