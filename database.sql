@@ -1,8 +1,3 @@
--- ============================================================
--- AGRI SYSTEM - SQL Server Database Schema
--- Dựa trên sơ đồ ER đã cung cấp
--- ============================================================
-
 USE master;
 GO
 
@@ -13,22 +8,6 @@ IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'AgriSystem')
 GO
 
 USE AgriSystem;
-GO
-
--- ============================================================
--- XÓA BẢNG CŨ (theo thứ tự phụ thuộc)
--- ============================================================
-IF OBJECT_ID('Transaction_Detail',  'U') IS NOT NULL DROP TABLE Transaction_Detail;
-IF OBJECT_ID('Counterfeit_Report',  'U') IS NOT NULL DROP TABLE Counterfeit_Report;
-IF OBJECT_ID('[Transaction]',       'U') IS NOT NULL DROP TABLE [Transaction];
-IF OBJECT_ID('Batch',               'U') IS NOT NULL DROP TABLE Batch;
-IF OBJECT_ID('Product',             'U') IS NOT NULL DROP TABLE Product;
-IF OBJECT_ID('Certification',       'U') IS NOT NULL DROP TABLE Certification;
-IF OBJECT_ID('Staff',               'U') IS NOT NULL DROP TABLE Staff;
-IF OBJECT_ID('Garden',              'U') IS NOT NULL DROP TABLE Garden;
-IF OBJECT_ID('Customer',            'U') IS NOT NULL DROP TABLE Customer;
-IF OBJECT_ID('Manager',             'U') IS NOT NULL DROP TABLE Manager;
-IF OBJECT_ID('Account',             'U') IS NOT NULL DROP TABLE Account;
 GO
 
 -- ============================================================
@@ -231,92 +210,6 @@ CREATE INDEX IX_Report_Product          ON Counterfeit_Report(product_id);
 CREATE INDEX IX_Report_Status           ON Counterfeit_Report(status);
 GO
 
--- ============================================================
--- DỮ LIỆU MẪU
--- ============================================================
-
--- Account
-INSERT INTO Account (type, username, password, email) VALUES
-('manager',  'manager1',  '123456', 'manager1@agri.com'),
-('customer', 'customer1', '000000', 'customer1@gmail.com'),
-('customer', 'customer2', '000000', 'customer2@gmail.com'),
-('staff',    'staff1',    '123456', 'staff1@agri.com');
-
--- Manager
-INSERT INTO Manager (account_id, full_name, managed_id, phone_number, organization_name) VALUES
-(1, N'Nguyễn Văn Quản', 'MGR001', '0901234567', N'Hợp tác xã Nông nghiệp Xanh');
-
--- Customer
-INSERT INTO Customer (account_id, full_name, phone_number) VALUES
-(2, N'Trần Thị Lan',  '0912345678'),
-(3, N'Lê Văn Bình',   '0923456789');
-
--- Garden
-INSERT INTO Garden (manager_id, name, area, street, city, soil_type, registered_date) VALUES
-(1, N'Vườn Hữu Cơ Đồng Nai', 8500.75, N'Xã Xuân Bảo, huyện Xuân Lộc', N'Đồng Nai', N'Đất bazan', '2023-01-15'),
-(1, N'Vườn Rau Sạch Đà Lạt',  3200.00, N'Phường 7',                    N'Đà Lạt',   N'Đất mùn',   '2023-06-01');
-
--- Staff
-INSERT INTO Staff (garden_id, account_id, full_name, phone, position) VALUES
-(1, 4, N'Phạm Văn Nhân', '0934567890', N'Nhân viên thu hoạch');
-
--- Certification
-INSERT INTO Certification (garden_id, name, issue_date, expiry_date, issuing_authority) VALUES
-(1, N'VietGAP',  '2024-01-01', '2026-01-01', N'Cục Bảo vệ Thực vật'),
-(1, N'Hữu cơ',  '2024-03-01', '2026-03-01', N'IFOAM Việt Nam'),
-(2, N'VietGAP',  '2024-06-01', '2026-06-01', N'Cục Bảo vệ Thực vật');
-
--- Product
-INSERT INTO Product (garden_id, product_name, type, description, quality, area, species, unit_price) VALUES
-(1, N'Rau bina hữu cơ',   N'Rau lá',   N'Rau bina tươi ngon, trồng tiêu chuẩn hữu cơ', N'Hữu cơ',   500.00,  N'Spinacia oleracea',     45000),
-(1, N'Cà chua bi cherry',  N'Trái cây', N'Cà chua bi ngọt, da mịn, giàu vitamin',         N'Loại 1',   800.00,  N'Solanum lycopersicum',  65000),
-(2, N'Dâu tây Đà Lạt',    N'Trái cây', N'Dâu tây tươi, vị ngọt chua đặc trưng',           N'Loại 1',  1200.00,  N'Fragaria × ananassa',  120000),
-(2, N'Rau muống nước',    N'Rau lá',   N'Rau muống tươi sạch, giòn ngọt',                N'VietGAP',   300.00,  N'Ipomoea aquatica',      18000);
-
--- Batch
-INSERT INTO Batch (product_id, batch_no, harvest_date, expiry_date, initial_quantity, current_quantity, status) VALUES
-(1, 'BATCH-RB-001', '2026-04-01', '2026-04-07',  200.00, 150.00, 'available'),
-(1, 'BATCH-RB-002', '2026-04-05', '2026-04-11',  300.00, 300.00, 'available'),
-(2, 'BATCH-CT-001', '2026-04-02', '2026-04-09',  150.00,  80.00, 'available'),
-(3, 'BATCH-DT-001', '2026-04-03', '2026-04-08',   50.00,  50.00, 'available'),
-(4, 'BATCH-RM-001', '2026-04-05', '2026-04-10',  500.00, 420.00, 'available');
-
--- Transaction
-INSERT INTO [Transaction] (customer_id, street, city, status, total_amount, notes) VALUES
-(1, N'123 Nguyễn Huệ, P.Bến Nghé', N'TP.HCM',  'delivered', 225000, N'Giao buổi sáng'),
-(2, N'45 Trần Phú',                  N'Đà Nẵng', 'pending',   120000, NULL);
-
--- Transaction_Detail (chi tiết đơn hàng)
-INSERT INTO Transaction_Detail (transaction_id, batch_id, unit_price, quantity) VALUES
-(1, 1, 45000,  3.00),   -- 3kg rau bina
-(1, 3, 65000,  1.50),   -- 1.5kg cà chua
-(2, 4, 120000, 1.00);   -- 1kg dâu tây
-
--- Counterfeit_Report
-INSERT INTO Counterfeit_Report (customer_id, product_id, location, detected_date, fake_method, status) VALUES
-(1, 2, N'Chợ Bình Thạnh, TP.HCM', '2026-04-03', N'Nhãn mác giả, giá rẻ bất thường', 'pending'),
-(2, 1, N'Siêu thị Big C Đà Nẵng',  '2026-04-04', N'Bao bì giả mạo thương hiệu',       'pending');
-GO
-
--- ============================================================
--- KIỂM TRA DỮ LIỆU
--- ============================================================
-SELECT 'Account'            AS [Table], COUNT(*) AS [Rows] FROM Account
-UNION ALL
-SELECT 'Manager',            COUNT(*) FROM Manager
-UNION ALL
-SELECT 'Customer',           COUNT(*) FROM Customer
-UNION ALL
-SELECT 'Garden',             COUNT(*) FROM Garden
-UNION ALL
-SELECT 'Staff',              COUNT(*) FROM Staff
-UNION ALL
-SELECT 'Certification',      COUNT(*) FROM Certification
-UNION ALL
-SELECT 'Product',            COUNT(*) FROM Product
-UNION ALL
-SELECT 'Batch',              COUNT(*) FROM Batch
-UNION ALL
 SELECT 'Transaction',        COUNT(*) FROM [Transaction]
 UNION ALL
 SELECT 'Transaction_Detail', COUNT(*) FROM Transaction_Detail
