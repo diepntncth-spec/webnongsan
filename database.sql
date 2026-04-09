@@ -10,9 +10,6 @@ GO
 USE AgriSystem;
 GO
 
--- ============================================================
--- 1. ACCOUNT - Tài khoản đăng nhập
--- ============================================================
 CREATE TABLE Account (
     account_id  INT           IDENTITY(1,1) PRIMARY KEY,
     status      VARCHAR(20)   NOT NULL DEFAULT 'active'
@@ -26,9 +23,7 @@ CREATE TABLE Account (
 );
 GO
 
--- ============================================================
--- 2. MANAGER - Quản lý vườn
--- ============================================================
+
 CREATE TABLE Manager (
     manager_id        INT           IDENTITY(1,1) PRIMARY KEY,
     account_id        INT           NOT NULL UNIQUE
@@ -40,9 +35,6 @@ CREATE TABLE Manager (
 );
 GO
 
--- ============================================================
--- 3. CUSTOMER - Khách hàng
--- ============================================================
 CREATE TABLE Customer (
     customer_id  INT           IDENTITY(1,1) PRIMARY KEY,
     account_id   INT           NOT NULL UNIQUE
@@ -53,9 +45,6 @@ CREATE TABLE Customer (
 );
 GO
 
--- ============================================================
--- 4. GARDEN - Vườn trồng
--- ============================================================
 CREATE TABLE Garden (
     garden_id       INT            IDENTITY(1,1) PRIMARY KEY,
     manager_id      INT            NOT NULL
@@ -69,9 +58,7 @@ CREATE TABLE Garden (
 );
 GO
 
--- ============================================================
--- 5. STAFF - Nhân viên vườn
--- ============================================================
+
 CREATE TABLE Staff (
     staff_id   INT           IDENTITY(1,1) PRIMARY KEY,
     garden_id  INT           NOT NULL
@@ -84,9 +71,6 @@ CREATE TABLE Staff (
 );
 GO
 
--- ============================================================
--- 6. CERTIFICATION - Chứng nhận của vườn
--- ============================================================
 CREATE TABLE Certification (
     certification_id  INT           IDENTITY(1,1) PRIMARY KEY,
     garden_id         INT           NOT NULL
@@ -99,9 +83,6 @@ CREATE TABLE Certification (
 );
 GO
 
--- ============================================================
--- 7. PRODUCT - Sản phẩm nông sản
--- ============================================================
 CREATE TABLE Product (
     product_id   INT            IDENTITY(1,1) PRIMARY KEY,
     garden_id    INT            NOT NULL
@@ -117,9 +98,6 @@ CREATE TABLE Product (
 );
 GO
 
--- ============================================================
--- 8. BATCH - Lô hàng (mỗi sản phẩm có nhiều lô)
--- ============================================================
 CREATE TABLE Batch (
     batch_id         INT           IDENTITY(1,1) PRIMARY KEY,
     product_id       INT           NOT NULL
@@ -137,9 +115,6 @@ CREATE TABLE Batch (
 );
 GO
 
--- ============================================================
--- 9. TRANSACTION - Giao dịch / Đơn hàng của khách
--- ============================================================
 CREATE TABLE [Transaction] (
     transaction_id   INT            IDENTITY(1,1) PRIMARY KEY,
     customer_id      INT            NOT NULL
@@ -154,9 +129,6 @@ CREATE TABLE [Transaction] (
 );
 GO
 
--- ============================================================
--- 10. TRANSACTION_DETAIL - Chi tiết giao dịch (Transaction ↔ Batch)
--- ============================================================
 CREATE TABLE Transaction_Detail (
     detail_id      INT            IDENTITY(1,1) PRIMARY KEY,
     transaction_id INT            NOT NULL
@@ -170,9 +142,6 @@ CREATE TABLE Transaction_Detail (
 );
 GO
 
--- ============================================================
--- 11. COUNTERFEIT_REPORT - Báo cáo hàng giả
--- ============================================================
 CREATE TABLE Counterfeit_Report (
     report_id     INT           IDENTITY(1,1) PRIMARY KEY,
     customer_id   INT           NOT NULL
@@ -192,9 +161,7 @@ CREATE TABLE Counterfeit_Report (
 );
 GO
 
--- ============================================================
--- INDEXES
--- ============================================================
+
 CREATE INDEX IX_Garden_Manager          ON Garden(manager_id);
 CREATE INDEX IX_Staff_Garden            ON Staff(garden_id);
 CREATE INDEX IX_Certification_Garden    ON Certification(garden_id);
