@@ -103,6 +103,28 @@ const LoginPage: React.FC = () => {
             Đăng ký ngay
           </Link>
         </p>
+
+        {/* Demo accounts - chỉ hiện khi gọi backend Render */}
+        {!window.location.hostname.includes('localhost') && <div className="mt-6 bg-green-50 border border-green-200 rounded-xl p-4">
+          <p className="text-xs font-semibold text-green-700 mb-2 text-center">Tài khoản Demo (mật khẩu: 123456)</p>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { username: 'kh_demo', label: 'Khách hàng', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200' },
+              { username: 'ql_demo', label: 'Quản lý', color: 'bg-purple-100 text-purple-700 hover:bg-purple-200' },
+              { username: 'nv_demo', label: 'Nhân viên', color: 'bg-teal-100 text-teal-700 hover:bg-teal-200' },
+            ].map(({ username, label, color }) => (
+              <button
+                key={username}
+                type="button"
+                onClick={() => { setUsername(username); setPassword('123456'); }}
+                className={`${color} text-xs font-medium py-2 px-1 rounded-lg transition-colors text-center`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-green-600 text-center mt-2">Bấm vào role để điền tự động</p>
+        </div>}
       </div>
     </div>
   );
