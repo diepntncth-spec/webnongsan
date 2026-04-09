@@ -1,7 +1,6 @@
 USE master;
 GO
 
--- Tạo database mới
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'AgriSystem')
     CREATE DATABASE AgriSystem
     COLLATE Vietnamese_CI_AS;
