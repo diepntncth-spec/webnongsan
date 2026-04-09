@@ -9,6 +9,7 @@ router.get('/', authenticateJWT, authorizeRoles('manager', 'staff'), batchContro
 router.get('/product/:productId', batchController.getBatchesByProduct);
 router.post('/', authenticateJWT, authorizeRoles('manager', 'staff'), batchController.createBatch);
 router.put('/:id', authenticateJWT, authorizeRoles('manager', 'staff'), batchController.updateBatch);
+router.patch('/:id', authenticateJWT, authorizeRoles('manager', 'staff'), batchController.updateBatch);
 router.delete('/:id', authenticateJWT, authorizeRoles('manager', 'staff'), batchController.deleteBatch);
 
 export default router;
