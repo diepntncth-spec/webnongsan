@@ -21,7 +21,24 @@ export const createReport = async (
     evidence_url?: string;
   }
 ) => {
-  // Use raw SQL to avoid SQL Server OUTPUT clause bug with NVarChar(Max) columns
+  const isPostgres = process.env.DATABASE_URL?.startsWith('postgresql');
+
+  if (isPostgres) {
+    // PostgreSQL (Supabase/Render): dùng Prisma create bình thường
+    return prisma.counterfeitReport.create({
+      data: {
+        customer_id,
+        product_id: Number(data.product_id),
+        location: data.location,
+        detected_date: data.detected_date ? new Date(data.detected_date) : null,
+        fake_method: data.fake_method,
+        evidence_url: data.evidence_url,
+        status: 'pending',
+      },
+    });
+  }
+
+  // SQL Server (local): dùng raw SQL để tránh OUTPUT clause bug với NVarChar(Max)
   const detected = data.detected_date ? new Date(data.detected_date) : null;
   await prisma.$executeRaw`
     INSERT INTO Counterfeit_Report (customer_id, product_id, location, detected_date, fake_method, evidence_url, status)
