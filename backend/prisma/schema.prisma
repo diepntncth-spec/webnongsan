@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlserver"
   url      = env("DATABASE_URL")
 }
 
@@ -31,7 +31,7 @@ model Manager {
   phone_number      String?
   organization_name String?
 
-  account             Account             @relation(fields: [account_id], references: [account_id], onDelete: Cascade)
+  account             Account             @relation(fields: [account_id], references: [account_id], onDelete: Cascade, onUpdate: NoAction)
   gardens             Garden[]
   counterfeit_reports CounterfeitReport[] @relation("ResolvedByManager")
 
@@ -45,7 +45,7 @@ model Customer {
   phone_number String?
   update_log   String?
 
-  account             Account             @relation(fields: [account_id], references: [account_id], onDelete: Cascade)
+  account             Account             @relation(fields: [account_id], references: [account_id], onDelete: Cascade, onUpdate: NoAction)
   transactions        Transaction[]
   counterfeit_reports CounterfeitReport[]
 
@@ -62,7 +62,7 @@ model Garden {
   soil_type       String?
   registered_date DateTime? @default(now())
 
-  manager        Manager         @relation(fields: [manager_id], references: [manager_id])
+  manager        Manager         @relation(fields: [manager_id], references: [manager_id], onDelete: NoAction, onUpdate: NoAction)
   staff          Staff[]
   certifications Certification[]
   products       Product[]
@@ -78,8 +78,8 @@ model Staff {
   phone      String?
   position   String?
 
-  garden  Garden   @relation(fields: [garden_id], references: [garden_id])
-  account Account? @relation(fields: [account_id], references: [account_id])
+  garden  Garden   @relation(fields: [garden_id], references: [garden_id], onDelete: NoAction, onUpdate: NoAction)
+  account Account? @relation(fields: [account_id], references: [account_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("Staff")
 }
@@ -92,7 +92,7 @@ model Certification {
   expiry_date       DateTime?
   issuing_authority String?
 
-  garden Garden @relation(fields: [garden_id], references: [garden_id])
+  garden Garden @relation(fields: [garden_id], references: [garden_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("Certification")
 }
@@ -109,7 +109,7 @@ model Product {
   unit_price   Decimal?
   created_at   DateTime  @default(now())
 
-  garden              Garden              @relation(fields: [garden_id], references: [garden_id])
+  garden              Garden              @relation(fields: [garden_id], references: [garden_id], onDelete: NoAction, onUpdate: NoAction)
   batches             Batch[]
   counterfeit_reports CounterfeitReport[]
 
@@ -127,7 +127,7 @@ model Batch {
   status           String    @default("available")
   created_at       DateTime  @default(now())
 
-  product             Product             @relation(fields: [product_id], references: [product_id])
+  product             Product             @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction)
   transaction_details TransactionDetail[]
 
   @@map("Batch")
@@ -143,7 +143,7 @@ model Transaction {
   total_amount     Decimal?
   notes            String?
 
-  customer            Customer            @relation(fields: [customer_id], references: [customer_id])
+  customer            Customer            @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction)
   transaction_details TransactionDetail[]
 
   @@map("Transaction")
@@ -156,8 +156,8 @@ model TransactionDetail {
   unit_price     Decimal
   quantity       Decimal
 
-  transaction Transaction @relation(fields: [transaction_id], references: [transaction_id])
-  batch       Batch       @relation(fields: [batch_id], references: [batch_id])
+  transaction Transaction @relation(fields: [transaction_id], references: [transaction_id], onDelete: NoAction, onUpdate: NoAction)
+  batch       Batch       @relation(fields: [batch_id], references: [batch_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("Transaction_Detail")
 }
@@ -176,9 +176,9 @@ model CounterfeitReport {
   resolved_by   Int?
   resolved_at   DateTime?
 
-  customer Customer  @relation(fields: [customer_id], references: [customer_id])
-  product  Product   @relation(fields: [product_id], references: [product_id])
-  manager  Manager?  @relation("ResolvedByManager", fields: [resolved_by], references: [manager_id])
+  customer Customer  @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction)
+  product  Product   @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction)
+  manager  Manager?  @relation("ResolvedByManager", fields: [resolved_by], references: [manager_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("Counterfeit_Report")
 }
