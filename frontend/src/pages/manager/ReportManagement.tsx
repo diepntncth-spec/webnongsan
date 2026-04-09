@@ -18,7 +18,7 @@ interface Report {
 
 const statusConfig: Record<string, { label: string; className: string }> = {
   pending: { label: 'Chờ duyệt', className: 'bg-yellow-100 text-yellow-700' },
-  approved: { label: 'Đã duyệt', className: 'bg-green-100 text-green-700' },
+  confirmed: { label: 'Đã duyệt', className: 'bg-green-100 text-green-700' },
   rejected: { label: 'Từ chối', className: 'bg-red-100 text-red-700' },
 };
 
